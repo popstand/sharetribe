@@ -260,6 +260,7 @@ en:
         delete_this_marketplace: "Delete this marketplace"
         payment_preferences: "Payment system"
         pre_approved_listings: "Review all listings before they are published"
+        payments_not_enabled: "Payments are not enabled for your marketplace"
       manage_members:
         manage_members: Users
         email: Email

@@ -45,7 +45,13 @@ class TransactionsController < ApplicationController
 
       case [process.process, gateway]
       when matches([:none])
-        render_free(listing_model: listing_model, author_model: author_model, community: @current_community, params: transaction_params)
+        # *Popstand/StrongBlock*
+        # here we tie into the "Selling without online payment All categories" default order type
+        # this is also when "Allow sellers to accept payments online" in order type is unchecked
+        # we call the create method to create the transaction where we populate the first message
+        # with the listing title and chain id the transaction is being installed on
+        create
+        # render_free(listing_model: listing_model, author_model: author_model, community: @current_community, params: transaction_params)
       when matches([:preauthorize, :paypal]), matches([:preauthorize, :stripe]), matches([:preauthorize, [:paypal, :stripe]])
         redirect_to initiate_order_path(transaction_params)
       else
@@ -67,6 +73,14 @@ class TransactionsController < ApplicationController
         fetch_data(form[:listing_id])
       },
       ->(form, (_, _, _, process)) {
+        # *Popstand/StrongBlock*
+        # here we check if a chain_id is present
+        # if true then we fetch the listing
+        # and then create the structure of the first message on the transaction
+        if params[:chain_id].present?
+          listing = fetch_data(params[:listing_id])
+          form[:message] = "You have purchased #{listing.data[1].title} for Chain ID: #{params[:chain_id]}"
+        end
         validate_form(form, process)
       },
       ->(_, (listing_id, listing_model), _) {
@@ -113,6 +127,7 @@ class TransactionsController < ApplicationController
     ).on_success { |(_, (_, _, _, process), _, _, tx)|
       after_create_actions!(process: process, transaction: tx[:transaction], community_id: @current_community.id)
       flash[:notice] = after_create_flash(process: process) # add more params here when needed
+      #byebug
       redirect_to after_create_redirect(process: process, starter_id: @current_user.id, transaction: tx[:transaction]) # add more params here when needed
     }.on_error { |error_msg, data|
       flash[:error] = Maybe(data)[:error_tr_key].map { |tr_key| t(tr_key) }.or_else("Could not start a transaction, error message: #{error_msg}")

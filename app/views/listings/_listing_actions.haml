@@ -82,6 +82,15 @@
           .quantity-input.input-sm.required
             %input#quantity{type: 'number', placeholder: t("listings.quantity_placeholder"), name: 'quantity', value: 1, min: 1, step: 1}
 
+        / *Popstand/StrongBlock*
+        / here we add a chain id field to the listing form to pass to the backend
+        - if @current_user
+          .chain-id-wrapper.input-group.clearfix
+            .chain-id-label-wrapper
+              %label.chain-id-label{for: 'chain_id'} Chain ID:
+            .chain-id-input.input-sm.required
+              %input#chain-id{type: 'text', placeholder: '17c9w7fh2nsdf9as8df982n40sdf0823490s8f9gjlk345j', name: 'chain_id'}
+
       = render partial: "delivery_opts", locals: { delivery_opts: @listing_presenter.delivery_opts, is_author: @listing_presenter.is_author }
 
       = hidden_field_tag(:listing_id, @listing.id)
@@ -172,4 +181,3 @@
             .icon-with-text-container
               = icon_tag("mail", ["icon-part"])
               .text-part#add-to-updates-email-text{data: {:"action-loading" => t("listings.edit_links.show_in_updates_email_loading"), :"action-error" => t("listings.edit_links.show_in_updates_email_error"), :"action-success"=> t("listings.edit_links.show_in_updates_email_success")}}= t("listings.edit_links.show_in_updates_email")
-
