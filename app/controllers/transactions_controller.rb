@@ -78,7 +78,7 @@ class TransactionsController < ApplicationController
         # if true then we fetch the listing
         # and then create the structure of the first message on the transaction
         if params[:chain_id].present?
-          listing = fetch_data(params[:listing_id])
+          listing = fetch_data(form[:listing_id])
           form[:message] = "You have purchased #{listing.data[1].title} for Chain ID: #{params[:chain_id]}"
         end
         validate_form(form, process)
@@ -120,14 +120,14 @@ class TransactionsController < ApplicationController
               starting_page: ::Conversation::PAYMENT,
               booking_fields: booking_fields,
               payment_gateway: process.process == :none ? :none : gateway, # TODO This is a bit awkward
-              payment_process: process.process
+              payment_process: process.process,
+              chain_id: params[:chain_id]
             }
           })
       }
     ).on_success { |(_, (_, _, _, process), _, _, tx)|
       after_create_actions!(process: process, transaction: tx[:transaction], community_id: @current_community.id)
       flash[:notice] = after_create_flash(process: process) # add more params here when needed
-      #byebug
       redirect_to after_create_redirect(process: process, starter_id: @current_user.id, transaction: tx[:transaction]) # add more params here when needed
     }.on_error { |error_msg, data|
       flash[:error] = Maybe(data)[:error_tr_key].map { |tr_key| t(tr_key) }.or_else("Could not start a transaction, error message: #{error_msg}")

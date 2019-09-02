@@ -1475,6 +1475,7 @@ CREATE TABLE `transactions` (
   `commission_from_buyer` int(11) DEFAULT NULL,
   `minimum_buyer_fee_cents` int(11) DEFAULT '0',
   `minimum_buyer_fee_currency` varchar(3) DEFAULT NULL,
+  `chain_id` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `index_transactions_on_listing_id` (`listing_id`) USING BTREE,
   KEY `index_transactions_on_conversation_id` (`conversation_id`) USING BTREE,
@@ -2381,5 +2382,7 @@ INSERT INTO `schema_migrations` (version) VALUES
 ('20190319114719'),
 ('20190319122745'),
 ('20190717105844'),
-('20190718081745');
+('20190718081745'),
+('20190902180330');
+
 

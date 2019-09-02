@@ -39,6 +39,7 @@
 #  commission_from_buyer             :integer
 #  minimum_buyer_fee_cents           :integer          default(0)
 #  minimum_buyer_fee_currency        :string(3)
+#  chain_id                          :string(255)
 #
 # Indexes
 #
@@ -146,6 +147,8 @@ class Transaction < ApplicationRecord
     where("NOT starter_skipped_feedback AND NOT #{Testimonial.with_tx_starter.select('1').arel.exists.to_sql}
            OR NOT author_skipped_feedback AND NOT #{Testimonial.with_tx_author.select('1').arel.exists.to_sql}")
   }
+
+  after_create :send_strongblock_api_payload
 
   def booking_uuid_object
     if self[:booking_uuid].nil?
@@ -326,4 +329,9 @@ class Transaction < ApplicationRecord
     (unit_price * quantity) + shipping_price + buyer_commission
   end
 
+  private
+
+  def send_strongblock_api_payload
+    StrongBlock::Api::Payload.new(listing, starter, self).send
+  end
 end

@@ -1,61 +1,45 @@
 #
-# Give `listing`, `community` and `user` and get back true or false
-# whether of not the listing can be shown to given user in the given community
+# Give `listing`, `person`, `transaction`
+# Send payload to the StrongBlock API
 #
 class StrongBlock::Api::Payload
   private
 
-  attr_reader :listing, :community, :user
+  attr_reader :listing, :person, :transaction
 
   public
 
-  def initialize(listing, community, user)
+  def initialize(listing, person, transaction)
     @listing = listing
-    @community = community
-    @user = user
+    @person = person
+    @transaction = transaction
   end
 
-  def visible?
-     authorized_to_view? && (open? || is_author? || is_admin?)
-  end
-
-  def authorized_to_view?
-    return false unless listing_belongs_to_community?
-
-    if user_logged_in?
-      user_member_of_community? || user.has_admin_rights?(community)
-    else
-      public_community?
-    end
+  def send
+    post
   end
 
   private
 
-  def open?
-    !listing.closed? && listing.approved?
+  def payload
+    {
+      payload: {
+        chain_id: transaction.chain_id,
+        user: person.id
+      },
+       upload: {
+        zip: 'https://marketplace.strongblock.io/listing/123/upload/smart_contract.zip' # Faraday::UploadIO.new(listing.zip, 'application/octet-stream')
+      }
+    }
   end
 
-  def listing_belongs_to_community?
-    community && listing.community_id == community.id
-  end
+  def post
+    conn = Faraday.new(APP_CONFIG.strongblock_api_url) do |f|
+      f.request :multipart
+      f.request :url_encoded
+      f.adapter :net_http
+    end
 
-  def user_logged_in?
-    !user.nil?
-  end
-
-  def user_member_of_community?
-    user.accepted_community == community
-  end
-
-  def public_community?
-    !community.private?
-  end
-
-  def is_author?
-    user == listing.author
-  end
-
-  def is_admin?
-    user&.has_admin_rights?(community)
+    conn.post(APP_CONFIG.strongblock_payload_endpoint, payload)
   end
 end
