@@ -11,11 +11,11 @@ class RegenerateAuthTokenJob < Struct.new(:person_id, :community_id)
   end
 
   def perform
-    person = Person.find(person_id)
-    person.auth_token = nil
-    person.save
+    if (person = Person.find(person_id))
+      person.update(auth_token: nil)
 
-    StrongBlock::Api::UpdateMarketplaceAuthToken.new(person).send
+      StrongBlock::Api::UpdateMarketplaceAuthToken.new(person).send
+    end
   end
 
 end

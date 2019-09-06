@@ -11,8 +11,6 @@ class StrongBlock::Api::UpdateMarketplaceAuthToken
 
   def send
     #post
-    byebug
-    blah = 1
   end
 
   private
