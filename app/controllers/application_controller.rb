@@ -1,7 +1,6 @@
 require 'will_paginate/array'
 
 class ApplicationController < ActionController::Base
-
   module DefaultURLOptions
     # Adds locale to all links
     def default_url_options
@@ -19,7 +18,8 @@ class ApplicationController < ActionController::Base
   protect_from_forgery
   layout 'application'
 
-  before_action :check_http_auth,
+  before_action :authenticate_person_from_token!,
+    :check_http_auth,
     :check_auth_token,
     :fetch_community,
     :fetch_community_plan_expiration_status,
@@ -423,6 +423,24 @@ class ApplicationController < ActionController::Base
   end
 
   private
+
+  def authenticate_person_from_token!
+    if (person_id = params[:strongblock_user_id]).presence
+      if (person = Person.find_by(id: person_id))
+        sign_out(person)
+
+        if person && Devise.secure_compare(person.auth_token, params[:strongblock_user_token])
+          sign_in(person)
+          @current_user = person
+          force_hide_referer
+          Delayed::Job.enqueue(RegenerateAuthTokenJob.new(person.id))
+        end
+      end
+
+      path_without_auth_token = request.base_url + request.path
+      redirect_to path_without_auth_token
+    end
+  end
 
   # Override basic instrumentation and provide additional info for
   # lograge to consume. These are pulled and logged in environment

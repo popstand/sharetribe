@@ -44,9 +44,11 @@
 #  cloned_from                        :string(22)
 #  google_oauth2_id                   :string(255)
 #  linkedin_id                        :string(255)
+#  auth_token                         :string(30)
 #
 # Indexes
 #
+#  index_people_on_auth_token                         (auth_token) UNIQUE
 #  index_people_on_authentication_token               (authentication_token)
 #  index_people_on_community_id                       (community_id)
 #  index_people_on_community_id_and_google_oauth2_id  (community_id,google_oauth2_id)
@@ -228,6 +230,13 @@ class Person < ApplicationRecord
   validates_attachment_content_type :image,
                                     :content_type => ["image/jpeg", "image/png", "image/gif",
                                       "image/pjpeg", "image/x-png"] #the two last types are sent by IE.
+
+  before_save :ensure_auth_token
+  def ensure_auth_token
+    if auth_token.blank?
+      self.auth_token = generate_auth_token
+    end
+  end
 
   before_validation(:on => :create) do
     self.id = SecureRandom.urlsafe_base64
@@ -599,6 +608,13 @@ class Person < ApplicationRecord
   end
 
   private
+
+  def generate_auth_token
+    loop do
+      token = Devise.friendly_token
+      break token unless Person.where(auth_token: token).exists?
+    end
+  end
 
   def digest(password, salt)
     str = [password, salt].flatten.compact.join

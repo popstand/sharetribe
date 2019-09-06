@@ -103,7 +103,20 @@ class PeopleController < Devise::RegistrationsController
     if APP_CONFIG.skip_email_confirmation
       email.confirm!
 
-      redirect_to search_path
+      if params[:person][:strongblock]
+        respond_to do |format|
+          format.json {
+            render json: {
+              person: {
+                id: @person.id,
+                auth_token: @person.auth_token
+              }
+            }
+          }
+        end
+      else
+        redirect_to search_path
+      end
     else
       Email.send_confirmation(email, @current_community)
 
