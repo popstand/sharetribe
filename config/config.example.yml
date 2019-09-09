@@ -10,6 +10,8 @@
 
 development:
   # Add local `development` environment configuration overrides here
+  strongblock_api_url: 'https://strongblock.io'
+  strongblock_payload_endpoint: '/marketplace_payload_endpoint'
 
 test:
   # Add local `test` environment configuration overrides here
