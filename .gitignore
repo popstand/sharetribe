@@ -1,3 +1,4 @@
+.circleci/
 .DS_Store
 db/*.sqlite3
 db/sphinx
@@ -25,6 +26,7 @@ public/system/cover_photos/
 public/system/logos/
 public/system/small_cover_photos/
 public/system/wide_logos/
+public/system/smart_contract_zips
 .loadpath
 .project
 cg.sh
@@ -71,4 +73,3 @@ test-results.xml
 .vimrc
 client/.vimrc
 storage/
-
