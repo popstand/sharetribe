@@ -45,6 +45,7 @@
 #  google_oauth2_id                   :string(255)
 #  linkedin_id                        :string(255)
 #  auth_token                         :string(30)
+#  strongblock_auth_token             :string(30)
 #
 # Indexes
 #
@@ -60,6 +61,7 @@
 #  index_people_on_id                                 (id)
 #  index_people_on_linkedin_id                        (linkedin_id)
 #  index_people_on_reset_password_token               (reset_password_token) UNIQUE
+#  index_people_on_strongblock_auth_token             (strongblock_auth_token) UNIQUE
 #  index_people_on_username                           (username)
 #  index_people_on_username_and_community_id          (username,community_id) UNIQUE
 #  index_people_on_uuid                               (uuid) UNIQUE

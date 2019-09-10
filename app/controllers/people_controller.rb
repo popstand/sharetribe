@@ -104,6 +104,8 @@ class PeopleController < Devise::RegistrationsController
       email.confirm!
 
       if params[:person][:strongblock]
+        @person.update(strongblock_auth_token: params[:person][:strongblock_auth_token])
+
         respond_to do |format|
           format.json {
             render json: {
@@ -228,6 +230,18 @@ class PeopleController < Devise::RegistrationsController
   def check_username_availability
     respond_to do |format|
       format.json { render :json => Person.username_available?(params[:person][:username], @current_community.id) }
+    end
+  end
+
+  def update_strongblock_auth_token
+    if (person = Person.find(params[:person][:id]))
+      if person.update(strongblock_auth_token: params[:person][:auth_token])
+        render json: { msg: "Success!", status: 200 }, status: :ok
+      else
+        render json: { msg: "Unable to update strongblock auth token.", status: 400 }, status: :bad_request
+      end
+    else
+      render json: { msg: "Unable to find user.", status: 400 }, status: :bad_request
     end
   end
 

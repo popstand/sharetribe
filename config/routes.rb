@@ -438,6 +438,7 @@ Rails.application.routes.draw do
       get "/people/confirmation" => "confirmations#show", :as => :confirmation
       put "/people/confirmation" => "confirmations#create"
       get "/people/sign_up" => redirect("/%{locale}/login")
+      post '/people/update_strongblock_auth_token' => 'people#update_strongblock_auth_token'
 
       # List few specific routes here for Devise to understand those
       get "/signup" => "people#new", :as => :sign_up

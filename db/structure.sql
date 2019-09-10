@@ -1243,12 +1243,14 @@ CREATE TABLE `people` (
   `google_oauth2_id` varchar(255) DEFAULT NULL,
   `linkedin_id` varchar(255) DEFAULT NULL,
   `auth_token` varchar(30) DEFAULT NULL,
+  `strongblock_auth_token` varchar(30) DEFAULT NULL,
   UNIQUE KEY `index_people_on_username_and_community_id` (`username`,`community_id`) USING BTREE,
   UNIQUE KEY `index_people_on_uuid` (`uuid`),
   UNIQUE KEY `index_people_on_email` (`email`) USING BTREE,
   UNIQUE KEY `index_people_on_facebook_id_and_community_id` (`facebook_id`,`community_id`) USING BTREE,
   UNIQUE KEY `index_people_on_reset_password_token` (`reset_password_token`) USING BTREE,
   UNIQUE KEY `index_people_on_auth_token` (`auth_token`),
+  UNIQUE KEY `index_people_on_strongblock_auth_token` (`strongblock_auth_token`),
   KEY `index_people_on_authentication_token` (`authentication_token`) USING BTREE,
   KEY `index_people_on_community_id` (`community_id`) USING BTREE,
   KEY `index_people_on_facebook_id` (`facebook_id`) USING BTREE,
@@ -2384,6 +2386,7 @@ INSERT INTO `schema_migrations` (version) VALUES
 ('20190319122745'),
 ('20190717105844'),
 ('20190718081745'),
-('20190906031850');
+('20190906031850'),
+('20190910011618');
 
 
