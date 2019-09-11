@@ -17,16 +17,14 @@ class StrongBlock::Api::UpdateMarketplaceAuthToken
 
   def payload
     {
-      person: {
-        id: person.id,
-        auth_token: person.auth_token
+      'person': {
+        'id': "#{person.id}",
+        'auth_token': "#{person.auth_token}"
       }
     }
   end
 
   def post
-    conn = Faraday.new(APP_CONFIG.strongblock_api_url)
-
-    conn.post(APP_CONFIG.strongblock_update_marketplace_auth_token_endpoint, payload, { 'X-Accept' => 'application/json' })
+    RestClient.post("#{APP_CONFIG.strongblock_api_url}#{APP_CONFIG.strongblock_update_marketplace_auth_token_endpoint}", payload.to_json, content_type: :json)
   end
 end
