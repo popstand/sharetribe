@@ -10,7 +10,7 @@
 
 development:
   # Add local `development` environment configuration overrides here
-  strongblock_update_marketplace_auth_token_endpoint: '/update_marketplace_auth_token'
+  strongblock_update_marketplace_auth_token_endpoint: '/market/update_token'
 test:
   # Add local `test` environment configuration overrides here
 
