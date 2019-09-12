@@ -100,12 +100,10 @@ class PeopleController < Devise::RegistrationsController
 
     # send email confirmation
     # (unless disabled for testing environment)
-    if APP_CONFIG.skip_email_confirmation
+    if APP_CONFIG.skip_email_confirmation or params[:person][:strongblock]
       email.confirm!
 
       if params[:person][:strongblock]
-        @person.update(strongblock_auth_token: params[:person][:strongblock_auth_token])
-
         respond_to do |format|
           format.json {
             render json: {
@@ -301,6 +299,9 @@ class PeopleController < Devise::RegistrationsController
 
     person.set_default_preferences
     person.preferences["email_from_admins"] = (admin_emails_consent == "on")
+
+    person.strongblock_auth_token = initial_params[:person][:strongblock_auth_token]
+
     person.save
 
     [person, email]
