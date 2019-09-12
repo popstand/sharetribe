@@ -10,7 +10,7 @@ class StrongBlock::Api::UpdateMarketplaceAuthToken
   end
 
   def send
-    #post
+    post
   end
 
   private
